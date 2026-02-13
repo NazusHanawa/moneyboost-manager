@@ -1,0 +1,37 @@
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE IF NOT EXISTS stores (
+    id INTEGER PRIMARY KEY,
+    name TEXT UNIQUE NOT NULL,
+    url TEXT
+);
+
+CREATE TABLE IF NOT EXISTS platforms (
+    id INTEGER PRIMARY KEY,
+    name TEXT UNIQUE NOT NULL,
+    url TEXT
+);
+
+CREATE TABLE IF NOT EXISTS partnerships (
+    id INTEGER PRIMARY KEY,
+    store_id INTEGER NOT NULL,
+    platform_id INTEGER NOT NULL,
+    url TEXT,
+
+    UNIQUE(store_id, platform_id),
+    FOREIGN KEY (store_id) REFERENCES stores(id) ON DELETE CASCADE,
+    FOREIGN KEY (platform_id) REFERENCES platforms(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS cashbacks (
+    id INTEGER PRIMARY KEY,
+    partnership_id INTEGER NOT NULL,
+    value_global REAL NOT NULL CHECK (value_global >= 0),
+    value_specific REAL CHECK (value_specific >= value_global),
+    description TEXT,
+    
+    date_start TEXT NOT NULL DEFAULT (datetime('now', 'localtime')),
+    date_end TEXT NOT NULL DEFAULT (datetime('now', 'localtime')),
+
+    FOREIGN KEY (partnership_id) REFERENCES partnerships(id) ON DELETE CASCADE
+);
