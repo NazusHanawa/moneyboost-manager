@@ -1,1 +1,1 @@
-# moneyboost-admin
+# moneyboost-manager
