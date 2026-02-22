@@ -13,19 +13,24 @@ class DB:
         self.connection.commit()
         
     @timer
-    def remove_tables(self):
+    def clear(self):
         query = ""
         
         tables = ["stores", "cashbacks", "partnerships", "platforms"]
         for table in tables:
             query_table = f"DROP TABLE IF EXISTS {table};"
             query += query_table
+            
+        views = ["vw_partnerships", "vw_cashbacks", "vw_latest_cashbacks"]
+        for view in views:
+            query_table = f"DROP VIEW IF EXISTS {view};"
+            query += query_table
         
         self.cursor.executescript(query)
         self.commit()
 
     @timer
-    def create_tables(self):
+    def load_schema(self):
         with open("schema.sql", "r") as file:
             self.cursor.executescript(file.read())
         self.commit()
@@ -34,12 +39,12 @@ class DB:
     def get_platforms(self):
         rows = self.cursor.execute("SELECT * FROM platforms").fetchall()
         
-        stores = [
+        platforms = [
             {"id": row[0], "name": row[1], "url": row[2]} 
             for row in rows
         ]
         
-        return stores
+        return platforms
     
     @timer
     def add_platforms(self, platforms):
